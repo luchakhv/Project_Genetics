@@ -1,0 +1,61 @@
+import random
+import collections
+import string
+import matplotlib.pyplot as plt
+import msprime
+import numpy as np
+from IPython.display import SVG
+
+sequence_length = 11*10**6
+random_seed = 1
+time_units = 1000 / 25  # Conversion factor for kya to generations
+demography = msprime.Demography()
+Ne = 10**4
+demography.add_population(name="Mexicans", initial_size=Ne)
+demography.add_population(name="Africa", initial_size=Ne)
+demography.add_population(name="America", initial_size=Ne)
+demography.add_population(name="Europe", initial_size=Ne)
+demography.add_population(name="Neanderthal", initial_size=Ne)
+demography.add_population(name="Ancestral_human_population", initial_size=Ne)
+    #Мексиканцы - смесь американца, европейца и африканца в пропорции 0.3 : 0.6 : 0.1
+    
+demography.add_admixture(time = 0.45*time_units,derived = 'Mexicans', ancestral = ['Africa', 'America','Europe'], proportions = [0.1, 0.3, 0.6])
+    
+    #Разделение Неандертальца и африканца 400.000 лет назад
+demography.add_population_split(time=time_units *400, derived=["Africa","Neanderthal"], ancestral="Ancestral_human_population")
+
+
+    #Европеец отделяется от Африканца 70.000 лет назад
+demography.add_mass_migration(time=70 * time_units, source='Europe', dest='Africa', proportion=1)
+    
+        #Перемешивание неандертальца в европейца 45.000 лет назад
+demography.add_mass_migration(time=45 * time_units, source='Europe', dest='Neanderthal', proportion=0.02)
+    
+    #Перемешивание неандертальца в европейца 40.000 лет назад
+demography.add_mass_migration(time=40 * time_units, source='Europe', dest='Neanderthal', proportion=0.02)
+    
+    #Американец отделился от европейца 20.000 лет назад
+demography.add_mass_migration(time=20 * time_units, source='America', dest='Europe', proportion=1)
+    
+   
+demography.sort_events()
+  
+    #Задание 2
+ts = msprime.sim_ancestry(
+    recombination_rate=1e-8,
+    sequence_length=sequence_length,  
+    samples=[
+        msprime.SampleSet(1,  population='Mexicans'),
+        msprime.SampleSet(1,  population='Africa'),
+        msprime.SampleSet(1,  population='America'),
+        msprime.SampleSet(1,  population='Europe'),
+        msprime.SampleSet(0,  population='Ancestral_human_population'),
+        # Возьмём 50.000 лет назад неандертальца
+        msprime.SampleSet(1,  time=50 * time_units, population='Neanderthal'),
+    ],
+    demography = demography,
+    record_migrations=True,  # Нужно для отслеживания сегментов
+    random_seed=random_seed,
+)
+ts = msprime.sim_mutations(ts,rate = 1e-8, random_seed=random_seed)
+ts
