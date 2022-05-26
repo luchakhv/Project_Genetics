@@ -1,0 +1,2 @@
+#Задание 3
+display(SVG(ts.draw_svg(x_lim=(0, 5000))))
