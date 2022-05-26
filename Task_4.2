@@ -1,0 +1,7 @@
+samp_ids = ts.samples()
+print("  ID of diploid individual: ", " ".join([f"{ts.node(s).individual:3}" for s in samp_ids]))
+print("       ID of (sample) node: ", " ".join([f"{s:3}" for s in samp_ids]))
+for v in ts.variants():
+    site = v.site
+    alleles = np.array(v.alleles)
+    print(f"Site {site.id} (ancestral state '{site.ancestral_state}')",  alleles[v.genotypes])
