@@ -1,0 +1,15 @@
+#Задание 6
+def get_migrating_tracts(ts):
+    neanderthal_id = [p.id for p in ts.populations() if p.metadata['name']=='Neanderthal'][0]
+    migrating_tracts = []
+    europe_id =[q.id for q in ts.populations() if q.metadata['name']=='Europe'][0]
+    # Get all tracts that migrated into the neanderthal population
+    for migration in ts.migrations():
+        if (migration.dest == neanderthal_id and migration.source == europe_id):
+            migrating_tracts.append((migration.left, migration.right))
+    return np.array(migrating_tracts) 
+
+
+                                    
+migrating = get_migrating_tracts(ts)
+print(migrating)
