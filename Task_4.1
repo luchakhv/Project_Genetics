@@ -1,0 +1,6 @@
+import numpy as np
+np.set_printoptions(linewidth=200)  # print genotypes on a single line
+
+print("Genotypes")
+for v in ts.variants():
+    print(f"Site {v.site.id}: {v.genotypes}")
